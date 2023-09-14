@@ -24,19 +24,25 @@ public class UserController {
             servletRequest.getSession(true).setAttribute("user", request);
             return "redirect:/";
         }
-        return "createUser";
+        return "login";
     }
 
     @PostMapping("/create")
     public String createUser(@ModelAttribute CreateUserRequest request, HttpServletRequest servletRequest){
         if(userService.create(request)){
-            return "createUser";
+            return "redirect:/";
         }
-        return "redirect:/";
+        return "createUser";
     }
 
     @GetMapping("/create")
     public String createUserPage(){
         return "createUser";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 }
+

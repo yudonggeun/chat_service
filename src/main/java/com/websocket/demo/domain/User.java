@@ -1,5 +1,6 @@
 package com.websocket.demo.domain;
 
+import com.websocket.demo.request.LoginRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(columnDefinition = "varchar(20)")
+    @Column(columnDefinition = "varchar(20)", unique = true)
     private String nickname;
     @Column(columnDefinition = "varchar(20)")
     private String password;
@@ -39,5 +40,10 @@ public class User {
                     .build()
             );
         }
+    }
+
+    public boolean match(LoginRequest request) {
+        return request.getNickname().equals(nickname) &&
+                request.getPassword().equals(password);
     }
 }
