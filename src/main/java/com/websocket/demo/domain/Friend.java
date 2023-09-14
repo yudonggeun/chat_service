@@ -1,5 +1,6 @@
 package com.websocket.demo.domain;
 
+import com.websocket.demo.response.FriendInfo;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,38 +8,40 @@ import lombok.*;
 @Table(name = "FRIENDS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friend {
-    @EmbeddedId
-    private FriendFields fields;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Column
+    private String userNickname;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @Embeddable
-    public class FriendFields {
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
-        private User user;
-
-        @Column
-        private Long friendId;
-
-
-        private FriendFields(User user, Long friendId) {
-            this.user = user;
-            this.friendId = friendId;
-        }
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "friend_nickname")
+    private User friend;
 
     @Builder
-    private Friend(User user, Long friendId) {
-        this.fields = new FriendFields(user, friendId);
+    private Friend(String userNickname, User friend) {
+        this.userNickname = userNickname;
+        this.friend = friend;
     }
 
-    public User getUser() {
-        return fields.user;
+    public String getUserNickname() {
+        return userNickname;
     }
 
-    public Long getFriendId() {
-        return fields.friendId;
+    public User getFriend() {
+        return this.friend;
+    }
+
+    public FriendInfo toInfo() {
+        return new FriendInfo(getFriend().getNickname());
+    }
+
+    @Override
+    public String toString() {
+        return "Friend{" +
+                "id=" + id +
+                ", userNickname='" + userNickname + '\'' +
+                ", friend=" + friend.getNickname() +
+                '}';
     }
 }

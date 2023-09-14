@@ -1,4 +1,4 @@
-package com.websocket.demo.url;
+package com.websocket.demo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.websocket.demo.SpringTest;

@@ -3,7 +3,6 @@ package com.websocket.demo.repository;
 import com.websocket.demo.domain.Friend;
 import com.websocket.demo.domain.User;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ class UserRepositoryTest {
         //when
         User savedUser = userRepository.saveAndFlush(user);
         //then
-        Assertions.assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser).isNotNull();
     }
 
     @DisplayName("유저의 친구 목록을 조회할 수 있다.")
@@ -44,9 +43,8 @@ class UserRepositoryTest {
         //when
         List<Friend> friends = user.getFriends();
         //then
-        assertThat(friend1.getId()).isNotNull();
-        assertThat(friend2.getId()).isNotNull();
-        assertThat(friends).extracting("fields.friendId").containsExactly(friend1.getId(), friend2.getId());
+        assertThat(friends).extracting("friend.nickname")
+                .containsExactly(friend1.getNickname(), friend2.getNickname());
     }
 
     @DisplayName("유저 닉네임을 통해서 유저 엔티티를 조회할 수 있다.")
@@ -62,6 +60,16 @@ class UserRepositoryTest {
                 .containsExactly("testNick", "1234");
     }
 
+    @DisplayName("닉네임 중복 여부를 검사한다.")
+    @Test
+    public void existsByNickname() {
+        //given
+        User user = saveUser("testNick", "1234");
+        //when
+        boolean result = userRepository.existsByNickname(user.getNickname());
+        //then
+        assertThat(result).isTrue();
+    }
     private User saveUser(String nickname, String password) {
         return userRepository.saveAndFlush(new User(nickname, password));
     }
