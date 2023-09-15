@@ -6,16 +6,11 @@ import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.DeleteChat;
 import com.websocket.demo.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping
 @RequiredArgsConstructor
 public class ChatController {
 

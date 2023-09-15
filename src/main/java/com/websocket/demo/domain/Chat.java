@@ -27,7 +27,7 @@ public class Chat {
     private String message;
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Builder
     private Chat(Long roomId, String senderNickname, String message) {

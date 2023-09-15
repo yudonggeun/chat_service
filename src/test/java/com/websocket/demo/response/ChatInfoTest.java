@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -19,11 +21,13 @@ class ChatInfoTest {
                 .senderNickname("sender")
                 .roomId(100L)
                 .build());
+        LocalDateTime time = LocalDateTime.now();
         given(chat.getId()).willReturn(1L);
+        given(chat.getCreatedAt()).willReturn(time);
         //when
         ChatInfo info = ChatInfo.from(chat);
         //then
-        assertThat(info).extracting("id", "sender", "message", "roomId")
-                .containsExactly(1L, "sender", "message", 100L);
+        assertThat(info).extracting("id", "sender", "message", "roomId", "createdAt")
+                .containsExactly(1L, "sender", "message", 100L, time);
     }
 }
