@@ -28,5 +28,21 @@ class ChatRepositoryTest extends SpringTest {
                 .extracting("roomId", "senderNickname", "message")
                 .containsExactly(100L, "hello", "hi");
         assertThat(saved.getId()).isNotNull();
+        assertThat(saved.getCreateAt()).isNotNull();
+    }
+
+    @DisplayName("주어진 id의 체팅을 삭제한다.")
+    @Test
+    public void deleteOneById() {
+        //given
+        Chat chat = chatRepository.save(Chat.builder()
+                .roomId(100L)
+                .senderNickname("hello")
+                .message("hi")
+                .build());
+        //when
+        chatRepository.deleteById(100L);
+        //then
+        assertThat(chatRepository.findById(100L)).isEmpty();
     }
 }

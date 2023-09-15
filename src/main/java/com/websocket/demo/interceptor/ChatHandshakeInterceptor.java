@@ -1,6 +1,7 @@
 package com.websocket.demo.interceptor;
 
 import com.websocket.demo.request.LoginRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -11,7 +12,9 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class ChatHandshakeInterceptor implements HandshakeInterceptor {
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         return isLogin((ServletServerHttpRequest) request);

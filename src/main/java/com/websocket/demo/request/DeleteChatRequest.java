@@ -3,9 +3,7 @@ package com.websocket.demo.request;
 import lombok.Data;
 
 @Data
-public class ChatRequest {
-
-    private String sender;
-    private String message;
+public class DeleteChatRequest {
     private Long roomId;
+    private Long id;
 }

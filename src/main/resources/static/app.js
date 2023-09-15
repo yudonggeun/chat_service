@@ -7,7 +7,19 @@ stompClient.onConnect = (frame) => {
     console.log('Connected: ' + frame);
     stompClient.subscribe('/topic/chat/new', (greeting) => {
         const response = JSON.parse(greeting.body);
-        showGreeting(response.sender + " : " + response.message);
+        const sender = response.sender;
+        const message = response.message;
+        const roomId = response.roomId;
+        const id = response.id;
+        console.log(response);
+        showGreeting("NEW room : " + roomId + ", from : " + sender + "=(" + id + ": " + message + ")");
+    });
+    stompClient.subscribe('/topic/chat/delete', (greeting) => {
+        const response = JSON.parse(greeting.body);
+        const status = response.status;
+        const id = response.id;
+        const roomId = response.roomId;
+        showGreeting("DELETE " + id + " at " + roomId);
     });
 };
 
@@ -45,7 +57,21 @@ function disconnect() {
 function sendName() {
     stompClient.publish({
         destination: "/app/chat/new",
-        body: JSON.stringify({'message': $("#name").val()})
+        body: JSON.stringify({
+        'message': $("#name").val(),
+        'sender': "test1",
+        'roomId': 10
+        })
+    });
+}
+
+function deleteChat() {
+    stompClient.publish({
+        destination: "/app/chat/delete",
+        body: JSON.stringify({
+        'id': $("#id").val(),
+        'roomId': 10
+        })
     });
 }
 
@@ -58,4 +84,5 @@ $(function () {
     $( "#connect" ).click(() => connect());
     $( "#disconnect" ).click(() => disconnect());
     $( "#send" ).click(() => sendName());
+    $( "#deleteId" ).click(() => deleteChat());
 });
