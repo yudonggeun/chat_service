@@ -54,7 +54,7 @@ public class ChatTest extends SpringTest {
 
             @Override
             public void afterConnected(final StompSession session, StompHeaders connectedHeaders) {
-                session.subscribe("/topic/chat", new StompFrameHandler() {
+                session.subscribe("/topic/chat/new", new StompFrameHandler() {
                     @Override
                     public Type getPayloadType(StompHeaders headers) {
                         return ChatRequest.class;
@@ -66,6 +66,7 @@ public class ChatTest extends SpringTest {
                         try {
                             assertThat("hello, spring!").isEqualTo(chatRequest.getMessage());
                             assertThat("john").isEqualTo(chatRequest.getSender());
+                            assertThat(100L).isEqualTo(chatRequest.getRoomId());
                         } catch (Throwable t) {
                             failure.set(t);
                         } finally {
@@ -78,7 +79,8 @@ public class ChatTest extends SpringTest {
                     var request = new ChatRequest();
                     request.setMessage("hello, spring!");
                     request.setSender("john");
-                    session.send("/app/chat", request);
+                    request.setRoomId(100L);
+                    session.send("/app/chat/new", request);
                 } catch (Throwable t) {
                     failure.set(t);
                     latch.countDown();
