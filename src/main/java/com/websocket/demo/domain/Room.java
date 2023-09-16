@@ -5,6 +5,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,9 +20,22 @@ public class Room {
     private Long id;
     @Column
     private String title;
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomUserData> data = new ArrayList<>();
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
+    private List<Chat> chatList = new ArrayList<>();
 
     @Builder
     private Room(String title) {
         this.title = title;
+    }
+
+    public void addUser(String userNickname) {
+        data.add(RoomUserData.builder()
+                .room(this)
+                .backgroundColor("white")
+                .userNickname(userNickname)
+                .build());
     }
 }

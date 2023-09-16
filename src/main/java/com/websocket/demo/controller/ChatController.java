@@ -19,7 +19,7 @@ public class ChatController {
     @MessageMapping("/chat/new")
     @SendTo("/topic/chat/new")
     public ChatInfo newChat(CreateChatRequest request) {
-        return chatService.create(request);
+        return chatService.createChat(request);
     }
 
     @MessageMapping("/chat/delete")

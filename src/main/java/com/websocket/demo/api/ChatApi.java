@@ -1,13 +1,14 @@
 package com.websocket.demo.api;
 
+import com.websocket.demo.request.CreateRoomRequest;
 import com.websocket.demo.request.FindChatListRequest;
+import com.websocket.demo.request.LoginRequest;
 import com.websocket.demo.response.ApiResponse;
 import com.websocket.demo.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.websocket.demo.response.ApiResponse.*;
 
 @RestController
 @RequestMapping
@@ -17,7 +18,16 @@ public class ChatApi {
     private final ChatService chatService;
 
     @GetMapping("/chat")
-    public ApiResponse getChattingList(@ModelAttribute FindChatListRequest request){
-        return ApiResponse.success(chatService.findChatList(request));
+    public ApiResponse getChattingList(@ModelAttribute FindChatListRequest request) {
+        return success(chatService.findChatList(request));
+    }
+
+    @GetMapping("/room")
+    public ApiResponse getRoomList(@SessionAttribute("user") LoginRequest userInfo ) {
+        return success(chatService.findRoomList(userInfo.getNickname()));
+    }
+    @PostMapping("/room")
+    public ApiResponse createRoomList(@RequestBody CreateRoomRequest request){
+        return success(chatService.createRoom(request));
     }
 }

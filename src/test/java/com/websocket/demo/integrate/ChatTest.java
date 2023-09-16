@@ -3,9 +3,13 @@ package com.websocket.demo.integrate;
 import com.websocket.demo.SpringTest;
 import com.websocket.demo.interceptor.ChatHandshakeInterceptor;
 import com.websocket.demo.request.CreateChatRequest;
+import com.websocket.demo.request.CreateRoomRequest;
+import com.websocket.demo.response.RoomInfo;
+import com.websocket.demo.service.ChatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -16,6 +20,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,6 +36,8 @@ public class ChatTest extends SpringTest {
     private int port;
     @MockBean
     ChatHandshakeInterceptor chatHandshakeInterceptor;
+    @Autowired
+    ChatService chatService;
 
     private WebSocketStompClient stompClient;
 
@@ -49,6 +56,10 @@ public class ChatTest extends SpringTest {
 
         given(chatHandshakeInterceptor.beforeHandshake(any(), any(), any(), any()))
                 .willReturn(true);
+        var createRoomRequest = new CreateRoomRequest();
+        createRoomRequest.setTitle("welcome");
+        createRoomRequest.setUsers(List.of("john"));
+        RoomInfo room = chatService.createRoom(createRoomRequest);
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> failure = new AtomicReference<>();
         StompSessionHandler handler = new TestSessionHandler(failure) {
@@ -67,7 +78,7 @@ public class ChatTest extends SpringTest {
                         try {
                             assertThat("hello, spring!").isEqualTo(chatRequest.getMessage());
                             assertThat("john").isEqualTo(chatRequest.getSender());
-                            assertThat(100L).isEqualTo(chatRequest.getRoomId());
+                            assertThat(room.getId()).isEqualTo(chatRequest.getRoomId());
                         } catch (Throwable t) {
                             failure.set(t);
                         } finally {
@@ -80,7 +91,7 @@ public class ChatTest extends SpringTest {
                     var request = new CreateChatRequest();
                     request.setMessage("hello, spring!");
                     request.setSender("john");
-                    request.setRoomId(100L);
+                    request.setRoomId(room.getId());
                     session.send("/app/chat/new", request);
                 } catch (Throwable t) {
                     failure.set(t);
@@ -91,7 +102,7 @@ public class ChatTest extends SpringTest {
 
         this.stompClient.connectAsync("ws://localhost:{port}/chatting", this.headers, handler, this.port);
 
-        if (latch.await(3, TimeUnit.SECONDS)) {
+        if (latch.await(1, TimeUnit.SECONDS)) {
             if (failure.get() != null) throw new AssertionError("", failure.get());
         } else fail("not received");
 

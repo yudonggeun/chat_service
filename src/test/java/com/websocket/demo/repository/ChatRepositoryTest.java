@@ -24,8 +24,9 @@ class ChatRepositoryTest extends SpringTest {
     @Test
     public void saveChat() {
         //given
+        Room room = saveRoom("room1");
         Chat chat = Chat.builder()
-                .roomId(100L)
+                .room(room)
                 .senderNickname("hello")
                 .message("hi")
                 .build();
@@ -33,8 +34,8 @@ class ChatRepositoryTest extends SpringTest {
         Chat saved = chatRepository.save(chat);
         //then
         assertThat(saved).isNotNull()
-                .extracting("roomId", "senderNickname", "message")
-                .containsExactly(100L, "hello", "hi");
+                .extracting("room.id", "senderNickname", "message")
+                .containsExactly(room.getId(), "hello", "hi");
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getCreatedAt()).isNotNull();
     }
@@ -43,8 +44,9 @@ class ChatRepositoryTest extends SpringTest {
     @Test
     public void deleteOneById() {
         //given
+        Room room = saveRoom("room1");
         Chat chat = chatRepository.save(Chat.builder()
-                .roomId(100L)
+                .room(room)
                 .senderNickname("hello")
                 .message("hi")
                 .build());
@@ -63,7 +65,7 @@ class ChatRepositoryTest extends SpringTest {
                 .build());
 
         Chat chat = chatRepository.save(Chat.builder()
-                .roomId(room.getId())
+                .room(room)
                 .senderNickname("hello")
                 .message("hi")
                 .build());
@@ -72,7 +74,7 @@ class ChatRepositoryTest extends SpringTest {
         //when
         List<Chat> result = chatRepository.findByRoomIdAndCreatedAtBetween(room.getId(), from, to);
         //then
-        assertThat(result).extracting("senderNickname", "message", "roomId")
+        assertThat(result).extracting("senderNickname", "message", "room.id")
                 .containsExactly(
                         tuple("hello", "hi", room.getId())
                 );
@@ -87,7 +89,7 @@ class ChatRepositoryTest extends SpringTest {
                 .build());
 
         Chat chat = chatRepository.save(Chat.builder()
-                .roomId(room.getId())
+                .room(room)
                 .senderNickname("hello")
                 .message("hi")
                 .build());
@@ -100,4 +102,10 @@ class ChatRepositoryTest extends SpringTest {
                 .isEmpty();
     }
 
+    private Room saveRoom(String title) {
+        return roomRepository.saveAndFlush(Room.builder()
+                .title(title)
+                .build()
+        );
+    }
 }

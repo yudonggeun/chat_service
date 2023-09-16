@@ -18,7 +18,7 @@ public class ChatInfo {
         chatInfo.setId(chat.getId());
         chatInfo.setMessage(chat.getMessage());
         chatInfo.setSender(chat.getSenderNickname());
-        chatInfo.setRoomId(chat.getRoomId());
+        chatInfo.setRoomId(chat.getRoom().getId());
         chatInfo.setCreatedAt(chat.getCreatedAt());
         return chatInfo;
     }

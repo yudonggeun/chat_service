@@ -19,8 +19,9 @@ public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(nullable = false, updatable = false)
-    private Long roomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false, updatable = false)
+    private Room room;
     @Column(nullable = false, updatable = false)
     private String senderNickname;
     @Column
@@ -30,8 +31,8 @@ public class Chat {
     private LocalDateTime createdAt;
 
     @Builder
-    private Chat(Long roomId, String senderNickname, String message) {
-        this.roomId = roomId;
+    private Chat(Room room, String senderNickname, String message) {
+        this.room = room;
         this.senderNickname = senderNickname;
         this.message = message;
     }

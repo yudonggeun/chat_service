@@ -1,6 +1,7 @@
 package com.websocket.demo.response;
 
 import com.websocket.demo.domain.Chat;
+import com.websocket.demo.domain.Room;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 class ChatInfoTest {
 
@@ -16,14 +18,16 @@ class ChatInfoTest {
     @Test
     public void from() {
         //given
-        Chat chat = Mockito.spy(Chat.builder()
+        Room room = spy(Room.builder().build());
+        Chat chat = spy(Chat.builder()
                 .message("message")
                 .senderNickname("sender")
-                .roomId(100L)
+                .room(room)
                 .build());
         LocalDateTime time = LocalDateTime.now();
         given(chat.getId()).willReturn(1L);
         given(chat.getCreatedAt()).willReturn(time);
+        given(room.getId()).willReturn(100L);
         //when
         ChatInfo info = ChatInfo.from(chat);
         //then
