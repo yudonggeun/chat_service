@@ -35,13 +35,4 @@ public class Friend {
     public FriendInfo toInfo() {
         return new FriendInfo(getFriend().getNickname());
     }
-
-    @Override
-    public String toString() {
-        return "Friend{" +
-                "id=" + id +
-                ", userNickname='" + userNickname + '\'' +
-                ", friend=" + friend.getNickname() +
-                '}';
-    }
 }

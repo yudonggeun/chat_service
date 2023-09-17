@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @RequiredArgsConstructor
-public class ChatController {
+public class ChatWebsocketController {
 
     private final ChatService chatService;
 

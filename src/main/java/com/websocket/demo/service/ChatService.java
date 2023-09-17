@@ -3,11 +3,9 @@ package com.websocket.demo.service;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
 import com.websocket.demo.repository.ChatRepository;
+import com.websocket.demo.repository.RoomInfoRepository;
 import com.websocket.demo.repository.RoomRepository;
-import com.websocket.demo.request.CreateChatRequest;
-import com.websocket.demo.request.CreateRoomRequest;
-import com.websocket.demo.request.DeleteChatRequest;
-import com.websocket.demo.request.FindChatListRequest;
+import com.websocket.demo.request.*;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.DeleteChat;
 import com.websocket.demo.response.RoomInfo;
@@ -24,6 +22,7 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final RoomRepository roomRepository;
+    private final RoomInfoRepository roomInfoRepository;
 
     public ChatInfo createChat(CreateChatRequest request) {
         var room = roomRepository.findById(request.getRoomId())
@@ -62,5 +61,11 @@ public class ChatService {
         request.getUsers().forEach(room::addUser);
 
         return RoomInfo.from(roomRepository.save(room));
+    }
+    public void getOutRoom(RoomOutRequest request, String nickname) {
+        roomInfoRepository.deleteByUserNicknameAndRoomId(nickname, request.getId());
+        if(!roomInfoRepository.existsByUserNicknameAndRoomId(nickname, request.getId())){
+            roomRepository.deleteById(request.getId());
+        }
     }
 }

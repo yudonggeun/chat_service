@@ -4,14 +4,13 @@ import com.websocket.demo.SpringTest;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RoomRepositoryTest extends SpringTest {
     @Autowired

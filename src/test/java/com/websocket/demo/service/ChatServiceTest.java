@@ -4,11 +4,9 @@ import com.websocket.demo.SpringTest;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
 import com.websocket.demo.repository.ChatRepository;
+import com.websocket.demo.repository.RoomInfoRepository;
 import com.websocket.demo.repository.RoomRepository;
-import com.websocket.demo.request.CreateChatRequest;
-import com.websocket.demo.request.CreateRoomRequest;
-import com.websocket.demo.request.DeleteChatRequest;
-import com.websocket.demo.request.FindChatListRequest;
+import com.websocket.demo.request.*;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.DeleteChat;
 import com.websocket.demo.response.RoomInfo;
@@ -30,11 +28,14 @@ class ChatServiceTest extends SpringTest {
     ChatRepository chatRepository;
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RoomInfoRepository roomInfoRepository;
 
     @BeforeEach
-    public void init(){
+    public void init() {
         chatRepository.deleteAllInBatch();
-        roomRepository.deleteAll();
+        roomInfoRepository.deleteAllInBatch();
+        roomRepository.deleteAllInBatch();
     }
 
     @DisplayName("체팅을 전달 받으면 저장하고 저장된 체팅 정보를 반환한다.")
@@ -151,6 +152,37 @@ class ChatServiceTest extends SpringTest {
         assertThat(room.getId()).isNotNull();
         assertThat(room.getUsers()).contains("john", "tom", "nick");
         assertThat(room.getChat()).isEmpty();
+    }
+
+    @DisplayName("채팅방을 나간다.")
+    @Test
+    public void getOutRoom() {
+        //given
+        Long id = saveRoom("room1", "nick", "john").getId();
+
+        var request = new RoomOutRequest();
+        request.setId(id);
+        var nickname = "nick";
+        //when
+        chatService.getOutRoom(request, nickname);
+        //then
+        assertThat(roomInfoRepository.findAll()).extracting("userNickname", "id")
+                .doesNotContain(tuple("nick", id));
+    }
+
+    @DisplayName("채팅방을 나가고 아무도 없는 채팅방이라면 채팅방을 삭제한다.")
+    @Test
+    public void getOutRoomAndRemoveRoom() {
+        //given
+        Long id = saveRoom("room1", "nick").getId();
+
+        var request = new RoomOutRequest();
+        request.setId(id);
+        var nickname = "nick";
+        //when
+        chatService.getOutRoom(request, nickname);
+        //then
+        assertThat(roomRepository.findById(id)).isEmpty();
     }
 
     private Chat saveChat(Room room, String sender, String message) {

@@ -1,25 +1,29 @@
 package com.websocket.demo.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.websocket.demo.controller.RestDocs;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
 import com.websocket.demo.request.CreateRoomRequest;
 import com.websocket.demo.request.LoginRequest;
+import com.websocket.demo.request.RoomOutRequest;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.RoomInfo;
 import com.websocket.demo.service.ChatService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.spy;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -27,7 +31,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ChatApiTest extends RestDocs {
 
@@ -173,6 +178,39 @@ class ChatApiTest extends RestDocs {
                 );
     }
 
+    @DisplayName("채팅방 나가기 API")
+    @Test
+    public void getOutRoom() throws Exception {
+        //given
+        var loginInfo = new LoginRequest();
+        loginInfo.setNickname("hello");
+
+        var request = new RoomOutRequest();
+        doNothing().when(chatService).getOutRoom(any(), any());
+        //when //then
+        mockMvc.perform(delete("/room")
+                        .content(mapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .sessionAttr("user", loginInfo)
+        ).andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.status").value("success")
+                ).andDo(
+                        document("delete-room",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("id").description("나갈 채팅방의 id")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").description("요청 처리 결과")
+                                )
+                        )
+                )
+        ;
+
+    }
     private Chat createChat(long id, String nickname, String message, Room room, LocalDateTime createdAt) {
         Chat chat = spy(Chat.builder()
                 .room(room)
