@@ -2,6 +2,7 @@ package com.websocket.demo.controller;
 
 import com.websocket.demo.request.CreateChatRequest;
 import com.websocket.demo.request.DeleteChatRequest;
+import com.websocket.demo.request.InViteUserRequest;
 import com.websocket.demo.request.RoomOutRequest;
 import com.websocket.demo.response.ChatStompResponse;
 import com.websocket.demo.service.ChatService;
@@ -35,6 +36,14 @@ public class ChatWebsocketController {
         var nickname = (String) accessor.getSessionAttributes().get("nickname");
         var message = ChatStompResponse.getOutRoom(chatService.getOutRoom(request, nickname));
         sendTo(request.getId(), message);
+    }
+
+    @MessageMapping("/room/in")
+    public void roomOut(InViteUserRequest request, SimpMessageHeaderAccessor accessor) {
+        var host = (String) accessor.getSessionAttributes().get("nickname");
+        var message = ChatStompResponse.friendComeInRoom(chatService.inviteUser(request, host));
+        sendTo(request.getRoomId(), message);
+        sendTo(request.getNickname(), message);
     }
 
     private void sendTo(Long roomId, Object message){

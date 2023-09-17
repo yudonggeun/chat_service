@@ -10,6 +10,8 @@ import com.websocket.demo.request.*;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.DeleteChat;
 import com.websocket.demo.response.RoomInfo;
+import com.websocket.demo.response.RoomUserInfo;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -183,6 +185,61 @@ class ChatServiceTest extends SpringTest {
         chatService.getOutRoom(request, nickname);
         //then
         assertThat(roomRepository.findById(id)).isEmpty();
+    }
+
+    @DisplayName("없는 채팅방에 초대하면 예외가 발생한다.")
+    @Test
+    public void inviteUserFakeRoom() {
+        //given
+        var request = new InViteUserRequest();
+        request.setRoomId(100L);
+        //when //then
+        assertThatThrownBy(() -> chatService.inviteUser(request, "kun"));
+    }
+
+    @DisplayName("채팅방에 소속되지 않는 유저가 초대하면 예외가 발생한다.")
+    @Test
+    public void inviteUserStrangeHost() {
+        //given
+        Room room = saveRoom("room1", "kim");
+        var request = new InViteUserRequest();
+        request.setRoomId(room.getId());
+        request.setNickname("kun");
+        //when //then
+        assertThatThrownBy(() -> chatService.inviteUser(request, "cul"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("초대 유저가 null 이라면 예외가 발생한다.")
+    @Test
+    public void inviteUserHostNull() {
+        //given
+        Room room = saveRoom("room1", "kim");
+        var request = new InViteUserRequest();
+        request.setRoomId(room.getId());
+        request.setNickname("kun");
+        //when //then
+        assertThatThrownBy(() -> chatService.inviteUser(request, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Transactional
+    @DisplayName("채팅방 초대 요청시 성공한다")
+    @Test
+    public void inviteUser() {
+        //given
+        Room room = saveRoom("room1", "kim");
+        var request = new InViteUserRequest();
+        request.setRoomId(room.getId());
+        request.setNickname("kun");
+        //when
+        RoomInfo result = chatService.inviteUser(request, "kim");
+        var savedRoom = roomRepository.findById(room.getId()).get();
+        //then
+        assertThat(result.getId()).isEqualTo(room.getId());
+        assertThat(result.getUsers()).contains("kun", "kim");
+        assertThat(savedRoom.containsUser("kun")).isTrue();
+        assertThat(savedRoom.containsUser("kim")).isTrue();
     }
 
     private Chat saveChat(Room room, String sender, String message) {

@@ -20,7 +20,7 @@ public class ChatStompResponse {
         return new ChatStompResponse("deleteChat", data);
     }
 
-    public static ChatStompResponse friendComeInRoom(RoomUserInfo data){
+    public static ChatStompResponse friendComeInRoom(RoomInfo data){
         return new ChatStompResponse("friendComeInRoom", data);
     }
 

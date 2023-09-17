@@ -2,6 +2,7 @@ package com.websocket.demo.service;
 
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
+import com.websocket.demo.domain.RoomUserData;
 import com.websocket.demo.repository.ChatRepository;
 import com.websocket.demo.repository.RoomInfoRepository;
 import com.websocket.demo.repository.RoomRepository;
@@ -60,9 +61,10 @@ public class ChatService {
 
         return RoomInfo.from(roomRepository.save(room));
     }
+
     public RoomUserInfo getOutRoom(RoomOutRequest request, String nickname) {
         roomInfoRepository.deleteByUserNicknameAndRoomId(nickname, request.getId());
-        if(!roomInfoRepository.existsByUserNicknameAndRoomId(nickname, request.getId())){
+        if (!roomInfoRepository.existsByUserNicknameAndRoomId(nickname, request.getId())) {
             roomRepository.deleteById(request.getId());
         }
 
@@ -70,5 +72,13 @@ public class ChatService {
         result.setNickname(nickname);
         result.setRoomId(result.getRoomId());
         return result;
+    }
+
+    public RoomInfo inviteUser(InViteUserRequest request, String host) {
+        var room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방은 존재하지 않습니다."));
+        if (!room.containsUser(host)) throw new IllegalArgumentException("해당 유저는 초대 권한이 없습니다.");
+        room.addUser(request.getNickname());
+        return RoomInfo.fromWithoutChat(room);
     }
 }

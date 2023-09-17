@@ -58,6 +58,32 @@ class RoomInfoTest {
         assertThat(roomInfo.getUsers()).contains("john", "nick");
     }
 
+    @DisplayName("채팅방의 정보를 담은 객체를 생성시 채팅을 제외한 모든 정보가 일치해야한다.")
+    @Test
+    public void convertRoomInfoInfoWithOutChat() {
+        //given
+        var room = spy(Room.builder()
+                .title("rooms")
+                .build());
+
+        List<RoomUserData> roomUserDataList = List.of(
+                createRoomData(room, "nick", "white", 10L),
+                createRoomData(room, "john", "white", 11L)
+        );
+        given(room.getId()).willReturn(100L);
+        given(room.getData()).willReturn(List.of());
+        given(room.getData()).willReturn(roomUserDataList);
+        //when
+        var roomInfo = RoomInfo.fromWithoutChat(room);
+        //then
+        assertThat(roomInfo)
+                .extracting("id", "title")
+                .containsExactly(100L, "rooms");
+
+        assertThat(roomInfo.getChat()).isNull();
+        assertThat(roomInfo.getUsers()).contains("john", "nick");
+    }
+
     private static RoomUserData createRoomData(Room room, String nickname, String background, long id) {
         RoomUserData result = spy(RoomUserData.builder()
                 .room(room)

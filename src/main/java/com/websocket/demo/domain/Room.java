@@ -31,11 +31,18 @@ public class Room {
         this.title = title;
     }
 
-    public void addUser(String userNickname) {
-        data.add(RoomUserData.builder()
+    public RoomUserData addUser(String userNickname) {
+        RoomUserData entity = RoomUserData.builder()
                 .room(this)
                 .backgroundColor("white")
                 .userNickname(userNickname)
-                .build());
+                .build();
+        data.add(entity);
+        return entity;
+    }
+
+    public boolean containsUser(String host) {
+        return data.stream().map(RoomUserData::getUserNickname)
+                .anyMatch(user -> user.equals(host));
     }
 }

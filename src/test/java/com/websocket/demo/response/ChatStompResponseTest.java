@@ -35,7 +35,7 @@ class ChatStompResponseTest {
     @Test
     public void addFriend() {
         //given
-        var data = new RoomUserInfo();
+        var data = RoomInfo.builder().build();
         //when
         ChatStompResponse response = ChatStompResponse.friendComeInRoom(data);
         //then
