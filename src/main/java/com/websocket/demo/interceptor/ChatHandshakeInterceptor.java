@@ -17,17 +17,30 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        return isLogin((ServletServerHttpRequest) request);
+        if(isLogin((ServletServerHttpRequest) request)){
+            setInformation((ServletServerHttpRequest) request, attributes);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
     }
 
-    private static boolean isLogin(ServletServerHttpRequest request) {
+    private boolean isLogin(ServletServerHttpRequest request) {
         var servletRequest = request;
         var session = servletRequest.getServletRequest().getSession();
         var info = (LoginRequest) session.getAttribute("user");
         return info != null;
+    }
+
+    // spring security 적용시 Principal 주입으로 해결
+    private void setInformation(ServletServerHttpRequest request, Map<String, Object> attributes){
+        var servletRequest = request;
+        var session = servletRequest.getServletRequest().getSession();
+        var info = (LoginRequest) session.getAttribute("user");
+        var nickname = info.getNickname();
+        attributes.put("nickname", nickname);
     }
 }

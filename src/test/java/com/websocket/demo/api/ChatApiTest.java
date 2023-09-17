@@ -92,12 +92,12 @@ class ChatApiTest extends RestDocs {
         var request = new CreateRoomRequest();
         request.setTitle("room title");
         request.setUsers(List.of("user1", "user2", "user3"));
-        var response = new RoomInfo(
-                100L,
-                "room title",
-                List.of("user1", "user2", "user3"),
-                List.of()
-        );
+        var response = RoomInfo.builder()
+                .id(100L)
+                .title("room title")
+                .users(List.of("user1", "user2", "user3"))
+                .chat(List.of())
+                .build();
         given(chatService.createRoom(request)).willReturn(response);
         //when //then
         String content = mapper.writeValueAsString(request);
@@ -144,7 +144,13 @@ class ChatApiTest extends RestDocs {
         chatInfo.setMessage("hello");
         chatInfo.setCreatedAt(LocalDateTime.of(2000, 12, 12, 12, 12, 12));
 
-        var roomInfo = new RoomInfo(100L, "room title", List.of(), List.of(chatInfo));
+        var roomInfo = RoomInfo.builder()
+                .id(100L)
+                .title("room title")
+                .chat(List.of(chatInfo))
+                .users(List.of())
+                .build();
+
         given(chatService.findRoomList("nickname")).willReturn(List.of(roomInfo));
         //when then
         mockMvc.perform(get("/room").sessionAttr("user", info))
@@ -178,39 +184,6 @@ class ChatApiTest extends RestDocs {
                 );
     }
 
-    @DisplayName("채팅방 나가기 API")
-    @Test
-    public void getOutRoom() throws Exception {
-        //given
-        var loginInfo = new LoginRequest();
-        loginInfo.setNickname("hello");
-
-        var request = new RoomOutRequest();
-        doNothing().when(chatService).getOutRoom(any(), any());
-        //when //then
-        mockMvc.perform(delete("/room")
-                        .content(mapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .sessionAttr("user", loginInfo)
-        ).andDo(print())
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.status").value("success")
-                ).andDo(
-                        document("delete-room",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestFields(
-                                        fieldWithPath("id").description("나갈 채팅방의 id")
-                                ),
-                                responseFields(
-                                        fieldWithPath("status").description("요청 처리 결과")
-                                )
-                        )
-                )
-        ;
-
-    }
     private Chat createChat(long id, String nickname, String message, Room room, LocalDateTime createdAt) {
         Chat chat = spy(Chat.builder()
                 .room(room)

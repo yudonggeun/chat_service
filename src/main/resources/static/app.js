@@ -5,23 +5,32 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/chat/new', (greeting) => {
-        const response = JSON.parse(greeting.body);
-        const sender = response.sender;
-        const message = response.message;
-        const roomId = response.roomId;
-        const id = response.id;
-        console.log(response);
-        showGreeting("NEW room : " + roomId + ", from : " + sender + "=(" + id + ": " + message + ")");
-    });
-    stompClient.subscribe('/topic/chat/delete', (greeting) => {
-        const response = JSON.parse(greeting.body);
-        const status = response.status;
-        const id = response.id;
-        const roomId = response.roomId;
-        showGreeting("DELETE " + id + " at " + roomId);
+    stompClient.subscribe('/topic/chat-1', (res) => {
+        const response = JSON.parse(res.body);
+        const type = response.type;
+        const data = response.data;
+        if(type === "deleteChat"){
+            showGreeting(deleteChatHandle(data));
+        } else if(type === "createChat"){
+            showGreeting(createChatHandle(data));
+        }
     });
 };
+
+function createChatHandle(data){
+    const sender = data.sender;
+    const message = data.message;
+    const roomId = data.roomId;
+    const id = data.id;
+    return "NEW room : " + roomId + ", from : " + sender + "=(" + id + ": " + message + ")";
+}
+
+function deleteChatHandle(data){
+    const status = data.status;
+    const id = data.id;
+    const roomId = data.roomId;
+    return "DELETE " + id + " at " + roomId;
+}
 
 stompClient.onWebSocketError = (error) => {
     console.error('Error with websocket', error);
@@ -60,7 +69,7 @@ function sendName() {
         body: JSON.stringify({
         'message': $("#name").val(),
         'sender': "test1",
-        'roomId': 10
+        'roomId': 1
         })
     });
 }
@@ -70,7 +79,7 @@ function deleteChat() {
         destination: "/app/chat/delete",
         body: JSON.stringify({
         'id': $("#id").val(),
-        'roomId': 10
+        'roomId': 1
         })
     });
 }

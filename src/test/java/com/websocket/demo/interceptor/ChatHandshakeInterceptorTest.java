@@ -9,7 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.server.ServletServerHttpRequest;
 
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.atIndex;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 
@@ -29,11 +32,13 @@ class ChatHandshakeInterceptorTest {
         given(request.getServletRequest()).willReturn(servletRequest);
         given(servletRequest.getSession()).willReturn(session);
         given(session.getAttribute("user")).willReturn(loginInfo);
+        var map = new HashMap<String, Object>();
 
         //when
-        boolean isSuccess = new ChatHandshakeInterceptor().beforeHandshake(request, null, null, null);
+        boolean isSuccess = new ChatHandshakeInterceptor().beforeHandshake(request, null, null, map);
         //then
         assertThat(isSuccess).isTrue();
+        assertThat(map.get("nickname")).isEqualTo("hello");
     }
 
     @DisplayName("로그인 상태가 아니라면 false를 반환하여 이후 절차를 진행하지 않는다.")

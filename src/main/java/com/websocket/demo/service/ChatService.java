@@ -6,9 +6,7 @@ import com.websocket.demo.repository.ChatRepository;
 import com.websocket.demo.repository.RoomInfoRepository;
 import com.websocket.demo.repository.RoomRepository;
 import com.websocket.demo.request.*;
-import com.websocket.demo.response.ChatInfo;
-import com.websocket.demo.response.DeleteChat;
-import com.websocket.demo.response.RoomInfo;
+import com.websocket.demo.response.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,10 +60,15 @@ public class ChatService {
 
         return RoomInfo.from(roomRepository.save(room));
     }
-    public void getOutRoom(RoomOutRequest request, String nickname) {
+    public RoomUserInfo getOutRoom(RoomOutRequest request, String nickname) {
         roomInfoRepository.deleteByUserNicknameAndRoomId(nickname, request.getId());
         if(!roomInfoRepository.existsByUserNicknameAndRoomId(nickname, request.getId())){
             roomRepository.deleteById(request.getId());
         }
+
+        var result = new RoomUserInfo();
+        result.setNickname(nickname);
+        result.setRoomId(result.getRoomId());
+        return result;
     }
 }
