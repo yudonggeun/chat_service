@@ -15,10 +15,13 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -240,6 +243,56 @@ class ChatServiceTest extends SpringTest {
         assertThat(result.getUsers()).contains("kun", "kim");
         assertThat(savedRoom.containsUser("kun")).isTrue();
         assertThat(savedRoom.containsUser("kim")).isTrue();
+    }
+
+    @ParameterizedTest
+    @DisplayName("채팅방 설정을 변경한다.")
+    @ValueSource(strings = {"blue", "white", "red", "green"})
+    public void updateRoom(String color) {
+        //given
+        Long id = saveRoom("test", "mark").getId();
+
+        var request = new UpdateRoomConfigRequest();
+        request.setBackgroundColor(color);
+        request.setRoomId(id);
+        //when
+        RoomUserInfo roomUserInfo = chatService.updateRoom(request, "mark");
+        //then
+        assertThat(roomUserInfo).extracting("roomId", "nickname", "backgroundColor")
+                .containsExactly(id, "mark", color);
+        assertThat(roomInfoRepository.findByUserNicknameAndRoomId("mark", id).get())
+                .extracting("userNickname", "backgroundColor")
+                .containsExactly("mark", color);
+    }
+
+    @DisplayName("설정하고자하는 채팅방이 없다면 예외가 발생한다.")
+    @Test
+    public void updateRoomThatNotExist() {
+        //given
+        Long id = 1L;
+        String color = "red";
+
+        var request = new UpdateRoomConfigRequest();
+        request.setBackgroundColor(color);
+        request.setRoomId(id);
+        //when //then
+        assertThatThrownBy(() -> chatService.updateRoom(request, "mark"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("채팅방에 유저가소속되지 않다면 예외가 발생한다.")
+    @Test
+    public void updateRoomButUserNotValid() {
+        //given
+        Long id = saveRoom("test", "mark").getId();
+        String color = "blue";
+
+        var request = new UpdateRoomConfigRequest();
+        request.setBackgroundColor(color);
+        request.setRoomId(id);
+        //when //then
+        assertThatThrownBy(() -> chatService.updateRoom(request, "yan"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Chat saveChat(Room room, String sender, String message) {

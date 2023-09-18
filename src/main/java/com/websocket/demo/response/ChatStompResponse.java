@@ -1,8 +1,8 @@
 package com.websocket.demo.response;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ChatStompResponse {
     private String type;
     private Object data;

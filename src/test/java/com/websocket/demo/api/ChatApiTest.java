@@ -7,8 +7,10 @@ import com.websocket.demo.domain.Room;
 import com.websocket.demo.request.CreateRoomRequest;
 import com.websocket.demo.request.LoginRequest;
 import com.websocket.demo.request.RoomOutRequest;
+import com.websocket.demo.request.UpdateRoomConfigRequest;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.RoomInfo;
+import com.websocket.demo.response.RoomUserInfo;
 import com.websocket.demo.service.ChatService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.spy;
 import static org.mockito.Mockito.doNothing;
@@ -153,7 +156,9 @@ class ChatApiTest extends RestDocs {
 
         given(chatService.findRoomList("nickname")).willReturn(List.of(roomInfo));
         //when then
-        mockMvc.perform(get("/room").sessionAttr("user", info))
+        mockMvc.perform(get("/room")
+                        .sessionAttr("user", info)
+                )
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
@@ -179,6 +184,52 @@ class ChatApiTest extends RestDocs {
                                         fieldWithPath("data[].chat[].message").description("채팅 내용"),
                                         fieldWithPath("data[].chat[].roomId").description("채킹방 id"),
                                         fieldWithPath("data[].chat[].createdAt").description("채팅 생성시간")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("채팅방 배경색 변경 API")
+    @Test
+    public void changeBackgroundColor() throws Exception {
+        //given
+        var info = new LoginRequest();
+        info.setNickname("mark");
+
+        var request = new UpdateRoomConfigRequest();
+        request.setBackgroundColor("blue");
+        request.setRoomId(100L);
+
+        var response = new RoomUserInfo();
+        response.setNickname("mark");
+        response.setRoomId(100L);
+        response.setBackgroundColor("blue");
+        given(chatService.updateRoom(any(), any())).willReturn(response);
+        //when //then
+        mockMvc.perform(put("/room")
+                        .sessionAttr("user", info)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request))
+                ).andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.status").value("success"),
+                        jsonPath("$.data.roomId").value("100"),
+                        jsonPath("$.data.backgroundColor").value("blue"),
+                        jsonPath("$.data.nickname").value("mark")
+                ).andDo(
+                        document("put-change-room-setting",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("roomId").description("채팅방 id"),
+                                        fieldWithPath("backgroundColor").description("채팅방 배경색")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").description("요청 처리 결과"),
+                                        fieldWithPath("data.roomId").description("채팅방 id"),
+                                        fieldWithPath("data.nickname").description("유저 닉네임"),
+                                        fieldWithPath("data.backgroundColor").description("채팅방 배경색")
                                 )
                         )
                 );

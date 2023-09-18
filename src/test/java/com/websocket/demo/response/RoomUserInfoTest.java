@@ -2,12 +2,12 @@ package com.websocket.demo.response;
 
 import com.websocket.demo.domain.Room;
 import com.websocket.demo.domain.RoomUserData;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.Mockito.spy;
@@ -33,7 +33,7 @@ class RoomUserInfoTest {
         //when
         RoomUserInfo from = RoomUserInfo.from(data);
         //then
-        Assertions.assertThat(from).extracting("roomId", "nickname", "time")
-                .containsExactly(id, "nick", time);
+        assertThat(from).extracting("roomId", "nickname", "time", "backgroundColor")
+                .containsExactly(id, "nick", time, "white");
     }
 }

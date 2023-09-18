@@ -2,15 +2,17 @@ package com.websocket.demo.service;
 
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
-import com.websocket.demo.domain.RoomUserData;
 import com.websocket.demo.repository.ChatRepository;
 import com.websocket.demo.repository.RoomInfoRepository;
 import com.websocket.demo.repository.RoomRepository;
 import com.websocket.demo.request.*;
-import com.websocket.demo.response.*;
-import jakarta.transaction.Transactional;
+import com.websocket.demo.response.ChatInfo;
+import com.websocket.demo.response.DeleteChat;
+import com.websocket.demo.response.RoomInfo;
+import com.websocket.demo.response.RoomUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class ChatService {
         return new DeleteChat(request.getRoomId(), request.getId());
     }
 
+    @Transactional(readOnly = true)
     public List<ChatInfo> findChatList(FindChatListRequest req) {
         return chatRepository.findByRoomIdAndCreatedAtBetween(
                         req.getRoomId(), req.getFrom(), req.getTo()
@@ -48,6 +51,7 @@ public class ChatService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<RoomInfo> findRoomList(String nickname) {
         List<Room> rooms = roomRepository.findByDataUserNickname(nickname);
         return rooms.stream().map(RoomInfo::from).toList();
@@ -80,5 +84,12 @@ public class ChatService {
         if (!room.containsUser(host)) throw new IllegalArgumentException("해당 유저는 초대 권한이 없습니다.");
         room.addUser(request.getNickname());
         return RoomInfo.fromWithoutChat(room);
+    }
+
+    public RoomUserInfo updateRoom(UpdateRoomConfigRequest request, String nickname) {
+        var config = roomInfoRepository.findByUserNicknameAndRoomId(nickname, request.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("잘못되 요청입니다."));
+        config.setBackgroundColor(request.getBackgroundColor());
+        return RoomUserInfo.from(config);
     }
 }

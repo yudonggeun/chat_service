@@ -16,9 +16,9 @@ public class RoomUserData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", updatable = false)
     private Room room;
-    @Column
+    @Column(updatable = false)
     private String userNickname;
     @Column
     private LocalDateTime checkTime;
@@ -30,6 +30,14 @@ public class RoomUserData {
         this.room = room;
         this.userNickname = userNickname;
         this.checkTime = LocalDateTime.now();
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void setCheckTime(LocalDateTime checkTime) {
+        this.checkTime = checkTime;
+    }
+
+    public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 }

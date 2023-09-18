@@ -12,6 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class RoomUserInfo {
     private Long roomId;
     private String nickname;
+    private String backgroundColor;
     @JsonInclude(Include.NON_NULL)
     private LocalDateTime time;
 
@@ -20,6 +21,7 @@ public class RoomUserInfo {
         result.setTime(data.getCheckTime());
         result.setRoomId(data.getRoom().getId());
         result.setNickname(data.getUserNickname());
+        result.setBackgroundColor(data.getBackgroundColor());
         return result;
     }
 }
