@@ -72,24 +72,46 @@ public class ChatService {
             roomRepository.deleteById(request.getId());
         }
 
-        var result = new RoomUserInfo();
-        result.setNickname(nickname);
-        result.setRoomId(result.getRoomId());
-        return result;
+        return RoomUserInfo.builder()
+                .roomId(request.getId())
+                .nickname(nickname)
+                .build();
     }
 
     public RoomInfo inviteUser(InViteUserRequest request, String host) {
+
         var room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방은 존재하지 않습니다."));
+
         if (!room.containsUser(host)) throw new IllegalArgumentException("해당 유저는 초대 권한이 없습니다.");
+
         room.addUser(request.getNickname());
         return RoomInfo.fromWithoutChat(room);
     }
 
     public RoomUserInfo updateRoom(UpdateRoomConfigRequest request, String nickname) {
+
         var config = roomInfoRepository.findByUserNicknameAndRoomId(nickname, request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("잘못되 요청입니다."));
         config.setBackgroundColor(request.getBackgroundColor());
-        return RoomUserInfo.from(config);
+
+        return RoomUserInfo.builder()
+                .roomId(config.getRoom().getId())
+                .nickname(config.getUserNickname())
+                .backgroundColor(config.getBackgroundColor())
+                .build();
+    }
+
+    public RoomUserInfo checkRoom(CheckRoomRequest request, String nickname) {
+
+        var config = roomInfoRepository.findByUserNicknameAndRoomId(nickname, request.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("잘못되 요청입니다."));
+        config.setCheckTime(request.getCheckTime());
+
+        return RoomUserInfo.builder()
+                .time(config.getCheckTime())
+                .roomId(config.getRoom().getId())
+                .nickname(config.getUserNickname())
+                .build();
     }
 }

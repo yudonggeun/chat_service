@@ -200,10 +200,12 @@ class ChatApiTest extends RestDocs {
         request.setBackgroundColor("blue");
         request.setRoomId(100L);
 
-        var response = new RoomUserInfo();
-        response.setNickname("mark");
-        response.setRoomId(100L);
-        response.setBackgroundColor("blue");
+        var response = RoomUserInfo.builder()
+                .nickname("mark")
+                .roomId(100L)
+                .backgroundColor("blue")
+                .build();
+
         given(chatService.updateRoom(any(), any())).willReturn(response);
         //when //then
         mockMvc.perform(put("/room")

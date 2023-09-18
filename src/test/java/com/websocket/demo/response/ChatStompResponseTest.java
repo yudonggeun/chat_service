@@ -47,7 +47,7 @@ class ChatStompResponseTest {
     @Test
     public void getOutRoom() {
         //given
-        var data = new RoomUserInfo();
+        var data = RoomUserInfo.builder().build();
         //when
         ChatStompResponse response = ChatStompResponse.getOutRoom(data);
         //then
@@ -59,7 +59,7 @@ class ChatStompResponseTest {
     @Test
     public void readChat() {
         //given
-        var data = new RoomUserInfo();
+        var data = RoomUserInfo.builder().build();
         //when
         ChatStompResponse response = ChatStompResponse.readChat(data);
         //then

@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -258,8 +257,8 @@ class ChatServiceTest extends SpringTest {
         //when
         RoomUserInfo roomUserInfo = chatService.updateRoom(request, "mark");
         //then
-        assertThat(roomUserInfo).extracting("roomId", "nickname", "backgroundColor")
-                .containsExactly(id, "mark", color);
+        assertThat(roomUserInfo).extracting("roomId", "nickname", "backgroundColor", "time")
+                .containsExactly(id, "mark", color, null);
         assertThat(roomInfoRepository.findByUserNicknameAndRoomId("mark", id).get())
                 .extracting("userNickname", "backgroundColor")
                 .containsExactly("mark", color);
@@ -292,6 +291,52 @@ class ChatServiceTest extends SpringTest {
         request.setRoomId(id);
         //when //then
         assertThatThrownBy(() -> chatService.updateRoom(request, "yan"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("채팅방을 확인하면 확인 시간을 갱신하고 그 정보를 반환한다.")
+    @Test
+    public void checkRoom() {
+        //given
+        Room room = saveRoom("room test", "nick");
+        var checkTime = LocalDateTime.now();
+        var request = new CheckRoomRequest();
+        request.setRoomId(room.getId());
+        request.setCheckTime(checkTime);
+        var host = "nick";
+        //when
+        RoomUserInfo info = chatService.checkRoom(request, host);
+        //then
+        assertThat(info).extracting("roomId", "nickname", "time", "backgroundColor")
+                .containsExactly(room.getId(), "nick", checkTime, null);
+    }
+
+    @DisplayName("채팅 확인시 채팅방이 존재하지 않는다면 예외가 발생한다.")
+    @Test
+    public void checkRoomFail() {
+        //given
+        var checkTime = LocalDateTime.now();
+        var request = new CheckRoomRequest();
+        request.setRoomId(100L);
+        request.setCheckTime(checkTime);
+        var host = "nick";
+        //when //then
+        assertThatThrownBy(() -> chatService.checkRoom(request, host))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("채팅확인시 채팅방에 소속되지 않은 유저라면 예외가 발생한다.")
+    @Test
+    public void checkRoomFail2() {
+        //given
+        var room = saveRoom("test room", "kal");
+        var checkTime = LocalDateTime.now();
+        var request = new CheckRoomRequest();
+        request.setRoomId(room.getId());
+        request.setCheckTime(checkTime);
+        var host = "nick";
+        //when //then
+        assertThatThrownBy(() -> chatService.checkRoom(request, host))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

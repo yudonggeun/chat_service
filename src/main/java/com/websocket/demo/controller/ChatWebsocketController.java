@@ -43,6 +43,13 @@ public class ChatWebsocketController {
         sendTo(request.getNickname(), message);
     }
 
+    @MessageMapping("/room/check")
+    public void readChat(CheckRoomRequest request, SimpMessageHeaderAccessor accessor){
+        var host = (String) accessor.getSessionAttributes().get("nickname");
+        var message = ChatStompResponse.readChat(chatService.checkRoom(request, host));
+        sendTo(request.getRoomId(), message);
+    }
+
     private void sendTo(Long roomId, Object message){
         simpMessagingTemplate.convertAndSend("/topic/chat-" + roomId, message);
     }
