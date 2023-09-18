@@ -11,28 +11,30 @@ public class Friend {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column
-    private String userNickname;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_nickname")
-    private User friend;
+    @JoinColumn(name = "user_nickname", nullable = false)
+    private User user;
+
+    @Column(nullable = false)
+    private String friendNickname;
 
     @Builder
-    private Friend(String userNickname, User friend) {
-        this.userNickname = userNickname;
-        this.friend = friend;
+    private Friend(User user, String friend) {
+        this.user = user;
+        this.friendNickname= friend;
     }
 
-    public String getUserNickname() {
-        return userNickname;
+    public User getUser() {
+        return user;
     }
 
-    public User getFriend() {
-        return this.friend;
+    public String getName() {
+        return this.friendNickname;
     }
 
     public FriendInfo toInfo() {
-        return new FriendInfo(getFriend().getNickname());
+        return new FriendInfo(getName());
     }
+
+
 }

@@ -114,7 +114,9 @@ class UserServiceTest extends SpringTest {
             boolean result = userService.addFriend(request, loginUserNickname);
             //then
             assertThat(result).isTrue();
-            assertThat(userService.friendList(loginUserNickname)).hasSize(1);
+            assertThat(userService.friendList(loginUserNickname)).hasSize(1)
+                    .extracting("nickname")
+                    .contains("friend1");
         }
 
         @DisplayName("친구 닉네임이 존재하지 않을때")
@@ -140,6 +142,22 @@ class UserServiceTest extends SpringTest {
             boolean result = userService.addFriend(request, null);
             //then
             assertThat(result).isFalse();
+        }
+
+        @DisplayName("중복된 친구를 추가할 때")
+        @Transactional
+        @Test
+        public void duplicatedFriend(){
+            //given
+            var loginUserNickname = "hello";
+            var request = new AddFriendRequest();
+            request.setNickname("friend1");
+            //when
+            boolean first = userService.addFriend(request, loginUserNickname);
+            boolean second = userService.addFriend(request, loginUserNickname);
+            //then
+            assertThat(first).isTrue();
+            assertThat(second).isFalse();
         }
     }
 

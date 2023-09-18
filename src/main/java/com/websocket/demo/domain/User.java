@@ -20,7 +20,7 @@ public class User {
     private String nickname;
     @Column(columnDefinition = "varchar(20)")
     private String password;
-    @OneToMany(mappedBy = "friend", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friend> friends = new ArrayList<>();
 
     @Builder
@@ -32,8 +32,8 @@ public class User {
     public void addFriends(User... friends) {
         for (var friend : friends) {
             this.friends.add(Friend.builder()
-                    .userNickname(getNickname())
-                    .friend(friend)
+                    .user(this)
+                    .friend(friend.getNickname())
                     .build()
             );
         }
@@ -62,11 +62,16 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(nickname, user.nickname);
+        return Objects.equals(this.nickname, user.nickname);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(nickname);
+    }
+
+    public boolean contains(User user) {
+        return friends.stream().map(Friend::getName)
+                .anyMatch(u -> u.equals(user.getNickname()));
     }
 }
