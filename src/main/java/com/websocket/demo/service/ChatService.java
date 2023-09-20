@@ -37,8 +37,15 @@ public class ChatService {
         return ChatInfo.from(chat);
     }
 
-    public DeleteChat delete(DeleteChatRequest request) {
-        chatRepository.deleteById(request.getId());
+    public DeleteChat deleteChat(DeleteChatRequest request, String host) {
+        Chat chat = chatRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 채팅입니다."));
+        if (!chat.getSenderNickname().equals(host)) {
+            throw new IllegalArgumentException("채팅은 전송자만이 삭제할 수 있습니다.");
+        } else if (!chat.getRoom().getId().equals(request.getRoomId())) {
+            throw new IllegalArgumentException("채팅이 속한 채팅방 정보가 일치하지 않습니다.");
+        }
+        chatRepository.delete(chat);
         return new DeleteChat(request.getRoomId(), request.getId());
     }
 
@@ -68,7 +75,7 @@ public class ChatService {
 
     public RoomUserInfo getOutRoom(RoomOutRequest request, String nickname) {
         roomInfoRepository.deleteByUserNicknameAndRoomId(nickname, request.getId());
-        if (!roomInfoRepository.existsByUserNicknameAndRoomId(nickname, request.getId())) {
+        if (!roomInfoRepository.existsByRoomId(request.getId())) {
             roomRepository.deleteById(request.getId());
         }
 
@@ -84,6 +91,7 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방은 존재하지 않습니다."));
 
         if (!room.containsUser(host)) throw new IllegalArgumentException("해당 유저는 초대 권한이 없습니다.");
+        if (room.containsUser(request.getNickname())) throw new IllegalArgumentException("이미 초대된 유저입니다.");
 
         room.addUser(request.getNickname());
         return RoomInfo.fromWithoutChat(room);

@@ -1,20 +1,19 @@
 package com.websocket.demo.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.websocket.demo.controller.RestDocs;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
 import com.websocket.demo.request.CreateRoomRequest;
+import com.websocket.demo.request.DeleteFriendRequest;
 import com.websocket.demo.request.LoginRequest;
-import com.websocket.demo.request.RoomOutRequest;
 import com.websocket.demo.request.UpdateRoomConfigRequest;
 import com.websocket.demo.response.ChatInfo;
 import com.websocket.demo.response.RoomInfo;
 import com.websocket.demo.response.RoomUserInfo;
 import com.websocket.demo.service.ChatService;
+import com.websocket.demo.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.spy;
 import static org.mockito.Mockito.doNothing;
@@ -37,10 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ChatApiTest extends RestDocs {
+class ApiTest extends RestDocs {
 
     @MockBean
     ChatService chatService;
+    @MockBean
+    UserService userService;
 
     @DisplayName("체팅방의 체팅 목록 조회 API")
     @Test
@@ -235,6 +235,41 @@ class ChatApiTest extends RestDocs {
                                 )
                         )
                 );
+    }
+
+    @DisplayName("친구 관계 끊기 API")
+    @Test
+    public void deleteFriend() throws Exception {
+        //given
+        var info = new LoginRequest();
+        info.setNickname("mark");
+
+        var request = new DeleteFriendRequest();
+        request.setFriendNickname("nick");
+
+        doNothing().when(userService).removeFriendByNickname(any(), any());
+        //when
+        mockMvc.perform(delete("/friend")
+                        .sessionAttr("user", info)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request))
+                ).andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.status").value("success")
+                ).andDo(
+                        document("delete-friend",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("friendNickname").description("친구 닉네임")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").description("요청 처리 결과")
+                                )
+                        )
+                );
+        //then
     }
 
     private Chat createChat(long id, String nickname, String message, Room room, LocalDateTime createdAt) {

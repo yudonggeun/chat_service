@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface RoomInfoRepository extends JpaRepository<RoomUserData, Long> {
     void deleteByUserNicknameAndRoomId(String nickname, Long roomId);
 
-    boolean existsByUserNicknameAndRoomId(String nickname, Long roomId);
+    boolean existsByRoomId(Long roomId);
 
     Optional<RoomUserData> findByUserNicknameAndRoomId(String nickname, Long roomId);
 }

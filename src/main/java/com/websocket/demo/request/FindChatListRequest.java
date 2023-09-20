@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class FindChatListRequest {
     private Long roomId;
     @DateTimeFormat
-    private LocalDateTime from;
+    private LocalDateTime from = LocalDateTime.now().minusDays(1);
     @DateTimeFormat
-    private LocalDateTime to;
+    private LocalDateTime to = LocalDateTime.now();
 }

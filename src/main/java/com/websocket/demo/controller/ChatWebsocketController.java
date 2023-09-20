@@ -23,8 +23,9 @@ public class ChatWebsocketController {
     }
 
     @MessageMapping("/chat/delete")
-    public void deleteChat(DeleteChatRequest request) {
-        var message = ChatStompResponse.deleteChat(chatService.delete(request));
+    public void deleteChat(DeleteChatRequest request, SimpMessageHeaderAccessor accessor) {
+        var nickname = (String) accessor.getSessionAttributes().get("nickname");
+        var message = ChatStompResponse.deleteChat(chatService.deleteChat(request, nickname));
         sendTo(request.getRoomId(), message);
     }
 
@@ -36,7 +37,7 @@ public class ChatWebsocketController {
     }
 
     @MessageMapping("/room/in")
-    public void roomOut(InViteUserRequest request, SimpMessageHeaderAccessor accessor) {
+    public void roomIn(InViteUserRequest request, SimpMessageHeaderAccessor accessor) {
         var host = (String) accessor.getSessionAttributes().get("nickname");
         var message = ChatStompResponse.friendComeInRoom(chatService.inviteUser(request, host));
         sendTo(request.getRoomId(), message);

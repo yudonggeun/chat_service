@@ -1,12 +1,13 @@
 package com.websocket.demo.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 public class CreateChatRequest {
 
     private String sender;
+    @NotBlank
     private String message;
     private Long roomId;
 }

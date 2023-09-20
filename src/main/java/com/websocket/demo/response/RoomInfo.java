@@ -8,7 +8,7 @@ import lombok.Data;
 
 import java.util.List;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.*;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Data
 public class RoomInfo {
@@ -17,6 +17,7 @@ public class RoomInfo {
     private final String title;
     @JsonInclude(Include.NON_NULL)
     private final List<String> users;
+    @JsonInclude(Include.NON_NULL)
     private final List<ChatInfo> chat;
 
     @Builder

@@ -102,6 +102,19 @@ class UserServiceTest extends SpringTest {
             saveUser("friend1", "1234");
         }
 
+        @DisplayName("스스로를 친구 추가할 때")
+        @Test
+        public void selfAdd() {
+            //given
+            var host = "hello";
+            var request = new AddFriendRequest();
+            request.setNickname(host);
+            //when
+            boolean result = userService.addFriend(request, host);
+            //then
+            assertThat(result).isFalse();
+        }
+
         @Transactional
         @DisplayName("올바른 친구 닉네임이고 로그인이 되었을 때")
         @Test

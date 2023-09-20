@@ -75,14 +75,17 @@ class ChatServiceTest extends SpringTest {
     @Test
     public void deleteChatSuccess() {
         //given
+        var room = saveRoom("room test", "nick", "jon");
+        var chat = saveChat(room, "nick", "hello");
+
         var request = new DeleteChatRequest();
-        request.setId(100L);
-        request.setRoomId(10L);
+        request.setId(chat.getId());
+        request.setRoomId(room.getId());
         //when
-        DeleteChat response = chatService.delete(request);
+        DeleteChat response = chatService.deleteChat(request, "nick");
         // then
         assertThat(response).extracting("id", "roomId")
-                .containsExactly(100L, 10L);
+                .containsExactly(chat.getId(), room.getId());
     }
 
     @DisplayName("체팅 삭제가 실패한다면 예외가 발생한다")
@@ -91,10 +94,41 @@ class ChatServiceTest extends SpringTest {
         //given
         var request = new DeleteChatRequest();
         //when //then
-        assertThatThrownBy(() -> chatService.delete(request))
+        assertThatThrownBy(() -> chatService.deleteChat(request, ""))
                 .isInstanceOf(RuntimeException.class);
     }
 
+    @DisplayName("체팅 삭제 요청시 자신이 작성한 채팅이 아니라면 예외가 발생한다")
+    @Test
+    public void deleteChatFailWhenNotAllow() {
+        //given
+        var host = "jon";
+        var room = saveRoom("room test", "nick", "jon");
+        var chat = saveChat(room, "nick", "hello");
+
+        var request = new DeleteChatRequest();
+        request.setId(chat.getId());
+        request.setRoomId(room.getId());
+        //when //then
+        assertThatThrownBy(() -> chatService.deleteChat(request, host))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("체팅 삭제 요청시 채팅방 id가 다르면 예외가 발생한다")
+    @Test
+    public void deleteChatFailWhenNotMatchRoomId() {
+        //given
+        var host = "nick";
+        var room = saveRoom("room test", "nick", "jon");
+        var chat = saveChat(room, "nick", "hello");
+
+        var request = new DeleteChatRequest();
+        request.setId(chat.getId());
+        request.setRoomId(room.getId() + 1);
+        //when //then
+        assertThatThrownBy(() -> chatService.deleteChat(request, host))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
     @DisplayName("조건에 맞는 채팅 리스트를 찾는다.")
     @Test
     public void findChatList() {
@@ -172,6 +206,7 @@ class ChatServiceTest extends SpringTest {
         //then
         assertThat(roomInfoRepository.findAll()).extracting("userNickname", "id")
                 .doesNotContain(tuple("nick", id));
+        assertThat(roomRepository.findById(id)).isNotEmpty();
     }
 
     @DisplayName("채팅방을 나가고 아무도 없는 채팅방이라면 채팅방을 삭제한다.")
@@ -242,6 +277,21 @@ class ChatServiceTest extends SpringTest {
         assertThat(result.getUsers()).contains("kun", "kim");
         assertThat(savedRoom.containsUser("kun")).isTrue();
         assertThat(savedRoom.containsUser("kim")).isTrue();
+    }
+
+    @Transactional
+    @DisplayName("채팅방 초대시 이미 있는 유저라면 예외가 발생한다.")
+    @Test
+    public void inviteUserWhenDuplicate() {
+        //given
+        Room room = saveRoom("room1", "kim");
+        var request = new InViteUserRequest();
+        request.setRoomId(room.getId());
+        request.setNickname("kun");
+        //when
+        RoomInfo result = chatService.inviteUser(request, "kim");
+        //then
+        assertThatThrownBy(() -> chatService.inviteUser(request, "kim"));
     }
 
     @ParameterizedTest

@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/create")
     public String createUser(@ModelAttribute CreateUserRequest request){
         try {
-            if (userService.create(request)) return "redirect:/";
+            if (userService.create(request)) return "login";
         } catch (RuntimeException e){
             return "createUser";
         }
@@ -48,6 +48,12 @@ public class UserController {
 
     @GetMapping("/login")
     public String loginPage() {
+        return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request){
+        request.getSession().setMaxInactiveInterval(0);
         return "login";
     }
 

@@ -5,3 +5,11 @@ spring:
     console:
       enabled: true
       path: /db
+
+  devtools:
+    livereload:
+      enabled: true
+
+  jpa:
+    deferDatasourceInitialization: true
+    open-in-view: false

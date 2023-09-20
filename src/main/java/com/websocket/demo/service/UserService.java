@@ -38,10 +38,14 @@ public class UserService {
     }
 
     public boolean addFriend(AddFriendRequest request, String userNickname) {
+        if(userNickname.equals(request.getNickname())) return false;
+
         User user = userRepository.findByNickname(userNickname);
         User friend = userRepository.findByNickname(request.getNickname());
+
         if (friend == null || user == null) return false;
         if(user.contains(friend)) return false;
+
         user.addFriends(friend);
         return true;
     }
