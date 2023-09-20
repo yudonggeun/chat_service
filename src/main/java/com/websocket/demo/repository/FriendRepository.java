@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 
-    @EntityGraph(attributePaths = "friend")
+    @EntityGraph(attributePaths = "user")
     List<Friend> findByUserNickname(String nickname);
 
     @Modifying(flushAutomatically = true)
-    @Query("delete from Friend f where f.userNickname=:userNickname and f.friend.nickname=:friendNickname")
+    @Query("delete from Friend f where f.user.nickname=:userNickname and f.friendNickname=:friendNickname")
     void deleteByUserNicknameAndFriendNickname(@Param("userNickname") String userNickname,@Param("friendNickname") String friendNickname);
 }

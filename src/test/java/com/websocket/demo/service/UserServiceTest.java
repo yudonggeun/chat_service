@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserServiceTest extends SpringTest {
 
@@ -102,6 +101,19 @@ class UserServiceTest extends SpringTest {
             saveUser("friend1", "1234");
         }
 
+        @DisplayName("스스로를 친구 추가할 때")
+        @Test
+        public void selfAdd() {
+            //given
+            var host = "hello";
+            var request = new AddFriendRequest();
+            request.setNickname(host);
+            //when
+            boolean result = userService.addFriend(request, host);
+            //then
+            assertThat(result).isFalse();
+        }
+
         @Transactional
         @DisplayName("올바른 친구 닉네임이고 로그인이 되었을 때")
         @Test
@@ -114,7 +126,9 @@ class UserServiceTest extends SpringTest {
             boolean result = userService.addFriend(request, loginUserNickname);
             //then
             assertThat(result).isTrue();
-            assertThat(userService.friendList(loginUserNickname)).hasSize(1);
+            assertThat(userService.friendList(loginUserNickname)).hasSize(1)
+                    .extracting("nickname")
+                    .contains("friend1");
         }
 
         @DisplayName("친구 닉네임이 존재하지 않을때")
@@ -137,9 +151,25 @@ class UserServiceTest extends SpringTest {
             var request = new AddFriendRequest();
             request.setNickname("friend1");
             //when
-            boolean result = userService.addFriend(request, null);
+            boolean result = userService.addFriend(request, "nick");
             //then
             assertThat(result).isFalse();
+        }
+
+        @DisplayName("중복된 친구를 추가할 때")
+        @Transactional
+        @Test
+        public void duplicatedFriend(){
+            //given
+            var loginUserNickname = "hello";
+            var request = new AddFriendRequest();
+            request.setNickname("friend1");
+            //when
+            boolean first = userService.addFriend(request, loginUserNickname);
+            boolean second = userService.addFriend(request, loginUserNickname);
+            //then
+            assertThat(first).isTrue();
+            assertThat(second).isFalse();
         }
     }
 

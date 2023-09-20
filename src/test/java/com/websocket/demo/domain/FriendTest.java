@@ -16,8 +16,8 @@ class FriendTest {
         var friend = new User("fri", "1234");
         Friend friendInfo = createFriend(user, friend);
         //when //then
-        assertThat(friendInfo.getUserNickname()).isEqualTo(user.getNickname());
-        assertThat(friendInfo.getFriend()).isEqualTo(friend);
+        assertThat(friendInfo.getUser()).isEqualTo(user);
+        assertThat(friendInfo.getName()).isEqualTo(friend.getNickname());
     }
 
     @DisplayName("친구 정보를 담은 객체를 반환한다.")
@@ -36,10 +36,9 @@ class FriendTest {
 
     private Friend createFriend(User user, User friend) {
         var friendInfo = Friend.builder()
-                .friend(friend)
-                .userNickname(user.getNickname())
+                .friend(friend.getNickname())
+                .user(user)
                 .build();
         return friendInfo;
     }
-
 }

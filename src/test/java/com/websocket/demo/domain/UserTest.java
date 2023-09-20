@@ -55,4 +55,14 @@ class UserTest {
         //when //then
         assertThat(user.match(request)).isFalse();
     }
+
+    @DisplayName("유저의 닉네임(PK)이 같다면 같은 객체라고 판단한다.")
+    @Test
+    public void equals() {
+        //given
+        var user1 = new User("test1324", "password2");
+        var user2 = new User("test1324", "password1");
+        //when //then
+        assertThat(user1).isEqualTo(user2);
+    }
 }

@@ -43,7 +43,7 @@ class UserRepositoryTest {
         //when
         List<Friend> friends = user.getFriends();
         //then
-        assertThat(friends).extracting("friend.nickname")
+        assertThat(friends).extracting("friendNickname")
                 .containsExactly(friend1.getNickname(), friend2.getNickname());
     }
 

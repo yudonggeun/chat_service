@@ -10,7 +10,6 @@ import com.websocket.demo.request.LoginRequest;
 import com.websocket.demo.response.FriendInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,9 +37,14 @@ public class UserService {
     }
 
     public boolean addFriend(AddFriendRequest request, String userNickname) {
+        if(userNickname.equals(request.getNickname())) return false;
+
         User user = userRepository.findByNickname(userNickname);
         User friend = userRepository.findByNickname(request.getNickname());
+
         if (friend == null || user == null) return false;
+        if(user.contains(friend)) return false;
+
         user.addFriends(friend);
         return true;
     }

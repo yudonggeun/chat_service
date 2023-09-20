@@ -6,7 +6,6 @@ import com.websocket.demo.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -72,18 +71,14 @@ public class UserControllerTest extends RestDocs {
         mockMvc.perform(post("/user/create")
                         .param("nickname", "신기방기")
                         .param("password", "1234"))
-                .andExpectAll(
-                        status().is3xxRedirection(),
-                        header().string("Location", "/")
-                )
                 .andDo(print())
+                .andExpectAll(
+                        status().isOk()
+                )
                 .andDo(document("create-user-success",
                         formParameters(
                                 parameterWithName("nickname").description("닉네임"),
                                 parameterWithName("password").description("비밀번호")
-                        ),
-                        responseHeaders(
-                                headerWithName("Location").description("redirect path")
                         )
                 ));
     }

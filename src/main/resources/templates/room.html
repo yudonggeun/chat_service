@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head xmlns:th="http://www.thymeleaf.org">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body>
+<div class="flex flex-col h-screen bg-blue-100">
+    <div>
+        <div>
+            <form>
+                <div>
+                    <button id="connect" type="submit">Connect</button>
+                    <button id="disconnect" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <h1 th:text="" class="text-xl p-1 text-left rounded-lg bg-gray-50 dark:bg-gray-700">welcome to room1</h1>
+    <div class="flex-1 p-5 overflow-auto">
+        <div class="">
+            <div id="room" class="flex flex-col gap-1">
+                <div>
+                    <div class="text-sm px-1">
+                        user1
+                    </div>
+                    <div th:text="" class="message w-fit bg-yellow-200 p-1 px-2 text border rounded-lg">
+                        message
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form class="w-full">
+        <label for="message" class="sr-only">Your message</label>
+        <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
+        <textarea id="message" rows="1"
+                  class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        ></textarea>
+            <button id="send" type="submit"
+                    class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-5 h-5 rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                     viewBox="0 0 18 20">
+                    <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z"/>
+                </svg>
+                <span class="sr-only">Send message</span>
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

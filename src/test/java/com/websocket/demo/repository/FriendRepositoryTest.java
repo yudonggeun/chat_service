@@ -30,9 +30,9 @@ class FriendRepositoryTest extends SpringTest {
         //when
         List<Friend> friends = friendRepository.findByUserNickname(user1.getNickname());
         //then
-        assertThat(friends).extracting("userNickname")
+        assertThat(friends).extracting("user.nickname")
                 .contains(user1.getNickname());
-        assertThat(friends).extracting("friend.nickname")
+        assertThat(friends).extracting("friendNickname")
                 .contains(user2.getNickname());
     }
 
