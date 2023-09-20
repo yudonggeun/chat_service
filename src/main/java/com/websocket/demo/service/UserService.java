@@ -10,7 +10,6 @@ import com.websocket.demo.request.LoginRequest;
 import com.websocket.demo.response.FriendInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

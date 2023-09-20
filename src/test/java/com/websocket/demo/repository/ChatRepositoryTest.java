@@ -3,7 +3,6 @@ package com.websocket.demo.repository;
 import com.websocket.demo.SpringTest;
 import com.websocket.demo.domain.Chat;
 import com.websocket.demo.domain.Room;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -62,12 +62,14 @@ tailwind.config = {
 
 
 
+
     </script>
 
     <script th:inline="javascript">
     /*<![CDATA[*/
         const nickname = /*[[${nickname}]]*/;
     /*]]>*/
+
 
 
 
@@ -108,6 +110,7 @@ stompClient.onConnect = (frame) => {
     });
 };
     /*]]>*/
+
     </script>
     <style>
       .no-scrollbar::-webkit-scrollbar {
@@ -119,6 +122,7 @@ stompClient.onConnect = (frame) => {
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
       }
+
 
     </style>
 </head>
@@ -233,11 +237,10 @@ stompClient.onConnect = (frame) => {
                     </div>
                     <li th:each="friend : ${friends}">
                         <div th:id="'friend-' + ${friend.nickname}"
-                             class="flex dark:hover:bg-gray-700 hover:bg-blue-100 rounded-lg">
+                             class="flex dark:hover:bg-gray-700 hover:bg-gray-100 rounded-lg">
                             <button type="button"
                                     class="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group dark:text-white">
-                        <span th:text="${friend.nickname}"
-                              class="flex-1 ml-3 text-left whitespace-nowrap">friend nickname</span>
+                                <span th:text="${friend.nickname}" class="flex-1 ml-3 text-left whitespace-nowrap">friend nickname</span>
                             </button>
                             <button type="button"
                                     th:id="'delete-friend' + ${friend.nickname}"
@@ -318,7 +321,8 @@ stompClient.onConnect = (frame) => {
                         <a href="/user/logout" class="">
                             <button class="w-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor"
-                                     class="border-0 rounded-lg text-sm hover:bg-gray-100 mr-3 absolute right-0 bottom-0 bi bi-gear-fill" viewBox="0 0 16 16">
+                                     class="border-0 rounded-lg text-sm hover:bg-gray-100 mr-3 absolute right-0 bottom-0 bi bi-gear-fill"
+                                     viewBox="0 0 16 16">
                                     <path d="M7.5 1v7h1V1h-1z"/>
                                     <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
                                 </svg>
@@ -332,7 +336,8 @@ stompClient.onConnect = (frame) => {
         <div th:if="${targetRoom == null}"
              class="flex-1 grid h-screen bg-blue-100">
             <div class="place-self-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="#99ccff" class="bi bi-chat-heart-fill" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="#99ccff"
+                     class="bi bi-chat-heart-fill" viewBox="0 0 16 16">
                     <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15Zm0-9.007c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
                 </svg>
             </div>
@@ -342,7 +347,8 @@ stompClient.onConnect = (frame) => {
             <div class="relative w-full">
                 <div class="absolute top-0 right-0 w-full h-full flex-1 grid h-screen ">
                     <div class="place-self-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="#99ccff" class="bi bi-chat-heart-fill" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="#99ccff"
+                             class="bi bi-chat-heart-fill" viewBox="0 0 16 16">
                             <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15Zm0-9.007c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
                         </svg>
                     </div>

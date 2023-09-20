@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserServiceTest extends SpringTest {
 
@@ -152,7 +151,7 @@ class UserServiceTest extends SpringTest {
             var request = new AddFriendRequest();
             request.setNickname("friend1");
             //when
-            boolean result = userService.addFriend(request, null);
+            boolean result = userService.addFriend(request, "nick");
             //then
             assertThat(result).isFalse();
         }
