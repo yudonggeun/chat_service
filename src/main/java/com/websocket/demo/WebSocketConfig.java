@@ -14,20 +14,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
+public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfigurer{
 
     @Autowired
     ChatHandshakeInterceptor chatHandshakeInterceptor;
 
-//    @Override
-//    protected void configureStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint("/chatting")
-//                .addInterceptors(chatHandshakeInterceptor);
-//    }
-
-
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    protected void configureStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chatting")
                 .addInterceptors(chatHandshakeInterceptor);
     }

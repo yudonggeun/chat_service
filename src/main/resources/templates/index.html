@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
-    <script src="/app.js"></script>
     <script src="/scroll.js"></script>
     <script>
 tailwind.config = {
@@ -64,16 +63,14 @@ tailwind.config = {
 
 
     </script>
-
     <script th:inline="javascript">
     /*<![CDATA[*/
+        const domain = /*[[${@environment.getProperty('domain')}]]*/;
+        const port = /*[[${@environment.getProperty('server.port')}]]*/;
         const nickname = /*[[${nickname}]]*/;
     /*]]>*/
-
-
-
-
     </script>
+    <script src="/app.js"></script>
     <script th:inline="javascript" th:if="${targetRoom != null}">
     /*<![CDATA[*/
     connect();
