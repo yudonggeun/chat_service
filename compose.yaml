@@ -1,1 +1,33 @@
 services:
+  spring-boot:
+    image: chat-app
+    build:
+      dockerfile: ./Dockerfile
+    depends_on:
+      - broker
+      - redis
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+      - app-net
+
+  redis:
+    image: redis
+    networks:
+      - app-net
+
+  broker:
+    image: broker
+    build:
+      dockerfile_inline: |
+        FROM rabbitmq
+        RUN rabbitmq-plugins enable rabbitmq_management rabbitmq_stomp
+    ports:
+      - "15672:15672"
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

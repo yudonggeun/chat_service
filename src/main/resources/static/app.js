@@ -1,7 +1,6 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/chatting'
+    brokerURL: 'ws://' + `${domain}:${port}` + '/chatting'
 });
-
 
 function convertTime(time){
     const date = new Date(time);

@@ -1,12 +1,23 @@
 # 실시간 채팅 웹 사이트
+Start : From 23-09-13 <br>
+Version1 : To 23-09-20 <br>
+Version2 : To 23-09-22 <br>
 
-Version1 : From 23-09-13 To 23-09-20
+## 0. 실행
+### version 1
+```
+gradle bootRun
+```
+### version 2
+```
+docker-compose up -f compose.yml
+```
 
 ## 1. 기획 의도
 
 - STOMP 프로토콜을 이용한 실시간 채팅 서비스 기능을 개발하여 STOMP 기술을 익힌다.
 - 채팅 기능 구현을 통해서 동기화를 고려한 개발을 진행해본다.
-- 메시지 브로커 (RabbitMQ, Kafka) 서비스를 이용해서 아키텍처를 구성한다.
+- 메시지 브로커 (RabbitMQ or Kafka) 서비스를 이용해서 아키텍처를 구성한다.
 
 ## 2. 개발 기능
 
@@ -31,12 +42,10 @@ Version1 : From 23-09-13 To 23-09-20
 ## 3. 아키텍처
 
 ### version 1
-
-browser → server → db
+![version1](/file/version1_art.PNG)
 
 ### version 2
-
-browser → messageQueue → server → db
+![version2](/file/version2_art.PNG)
 
 ## 4. ERD 설계
 ![erd image](/file/erd.png)
