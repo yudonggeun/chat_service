@@ -1,5 +1,6 @@
 package com.websocket.demo.repository;
 
+import com.websocket.demo.SpringTest;
 import com.websocket.demo.domain.Friend;
 import com.websocket.demo.domain.User;
 import jakarta.transaction.Transactional;
@@ -12,9 +13,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 @Transactional
-class UserRepositoryTest {
+class UserRepositoryTest extends SpringTest {
 
     @Autowired
     UserRepository userRepository;

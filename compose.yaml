@@ -1,21 +1,50 @@
 services:
-  spring-boot:
-    image: chat-app
+  spring-boot2:
+    image: chat-app-v2
     build:
       dockerfile: ./Dockerfile
     depends_on:
       - broker
       - redis
+      - db
     ports:
       - "8080:8080"
     networks:
       - default
       - app-net
 
+  spring-boot1:
+    image: chat-app-v2
+    build:
+      dockerfile: ./Dockerfile
+    depends_on:
+      - broker
+      - redis
+      - db
+    ports:
+      - "8081:8080"
+    networks:
+      - default
+      - app-net
+
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 1234
+    networks:
+      - app-net
+
   redis:
     image: redis
     networks:
       - app-net
+    ports:
+      - "6379:6379"
 
   broker:
     image: broker
@@ -24,6 +53,7 @@ services:
         FROM rabbitmq
         RUN rabbitmq-plugins enable rabbitmq_management rabbitmq_stomp
     ports:
+      - "5672:5672"
       - "15672:15672"
     networks:
       - app-net
