@@ -37,6 +37,13 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     compileOnly 'org.projectlombok:lombok'
+    // reactor netty
+    implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
+    // amqp
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    // convert
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.4'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'com.h2database:h2'

@@ -65,7 +65,7 @@ tailwind.config = {
     </script>
     <script th:inline="javascript">
     /*<![CDATA[*/
-        const domain = /*[[${@environment.getProperty('domain')}]]*/;
+        const domain = document.location.hostname;
         const port = /*[[${@environment.getProperty('server.port')}]]*/;
         const nickname = /*[[${nickname}]]*/;
     /*]]>*/
